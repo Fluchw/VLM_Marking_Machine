@@ -1,0 +1,442 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 基础样式 */
+body { 
+    font-family: 'Inter', sans-serif; 
+    background-color: #111827;
+}
+
+/* 统一的输入框样式 */
+.form-input {
+    background-color: rgb(31, 41, 55);
+    color: rgb(243, 244, 246);
+    border: 1px solid rgb(75, 85, 99);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: transparent;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
+}
+
+/* 统一的标签样式 */
+.form-label {
+    color: rgb(229, 231, 235);
+    font-weight: 500;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* 按钮基础样式 */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-width: 160px;
+    height: 48px;
+    padding: 0 1.5rem;
+    font-weight: 600;
+    color: white;
+    border-radius: 0.5rem;
+    background-size: 200% auto;
+    transition: all 0.3s;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.btn-primary {
+    background: linear-gradient(to right, #4f46e5, #3b82f6);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: linear-gradient(to right, #4338ca, #2563eb);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: linear-gradient(to right, #0d9488, #059669);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: linear-gradient(to right, #0f766e, #047857);
+    transform: translateY(-1px);
+}
+
+/* 禁用状态 */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* 按钮交互效果 */
+.btn:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+/* 按钮容器组 */
+.button-group-container {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.button-group-container .grid {
+    display: inline-grid;
+    grid-gap: 1.5rem;
+}
+
+/* 按钮卡片容器 */
+.action-btn-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s;
+    height: 48px; /* 与按钮高度一致 */
+    border-radius: 0.5rem; /* 与按钮圆角一致 */
+}
+
+/* 去除主题中的按钮容器特殊样式 */
+.theme-styles1 .action-btn-card,
+.theme-styles2 .action-btn-card {
+    background: none;
+    border: none;
+    box-shadow: none;
+}
+
+/* 删除按钮样式 */
+.delete-btn {
+    padding: 0.25rem;
+    border-radius: 9999px;
+    background-color: rgb(239, 68, 68);
+    color: white;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.delete-btn:hover {
+    background-color: rgb(220, 38, 38);
+}
+
+/* 清除原有的隐藏样式 */
+.result-card:hover .delete-btn {
+    opacity: 1;
+}
+
+/* 结果卡片基础样式 */
+.result-card { 
+    transition: box-shadow 0.3s ease; 
+}
+
+/* 布局容器优化 */
+.space-y-4 {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.grid.gap-4 {
+    gap: 1.5rem;
+}
+
+/* 结果展示区优化 */
+#results {
+    margin-top: 3rem;
+}
+
+/* --- styles1主题样式 --- */
+.theme-styles1 .config-item-card, 
+.theme-styles1 .action-btn-card {
+    background: linear-gradient(145deg, #4a3a2a, #2c221a);
+    border: 2px solid #a16207;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.theme-styles1 .form-label { 
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #96fdb8;
+}
+
+.theme-styles1 .form-input { 
+    background-color: rgb(31, 41, 55);
+    color: white;
+    border: 1px solid rgb(75, 85, 99);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+}
+
+.theme-styles1 .form-input:focus {
+    outline: none;
+    border-color: transparent;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
+}
+
+.theme-styles1 .action-btn-card .btn { 
+    background: transparent;
+    color: #fef08a;
+    font-weight: 600;
+}
+
+.theme-styles1 .result-card { 
+    background: linear-gradient(145deg, #4a3a2a, #2c221a); 
+    padding: 0.75rem; 
+    border-radius: 0.75rem; 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4), inset 0 0 2px rgba(255,215,0,0.5); 
+}
+
+.theme_styles1 .card-frame { 
+    background: linear-gradient(to bottom, #e9d1ba, #5fc385, #b47b4a); 
+    border-radius: 0.5rem; 
+    padding: 0.5rem; 
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5); 
+}
+
+.theme_styles1 .card-header { 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    background: linear-gradient(135deg, #d32f2f, #a12020); 
+    color: white; 
+    padding: 0.25rem 0.75rem; 
+    border-radius: 0.375rem; 
+    font-family: 'Cinzel', serif; 
+    text-shadow: 1px 1px 2px black; 
+    border: 2px solid #46f7bc; 
+    font-size: 1.1rem;
+}
+
+/* 卡片装饰元素 */
+.theme_styles1 .card-header::before, 
+.theme_styles1 .card-header::after { 
+    content: ''; 
+    position: absolute; 
+    top: 50%; 
+    width: 0.5rem; 
+    height: 0.5rem; 
+    background: #35f0fd; 
+    border-radius: 50%; 
+    transform: translateY(-50%); 
+    box-shadow: 0 0 3px #fff; 
+}
+
+.theme_styles1 .card-header::before { 
+    left: -1rem; 
+}
+
+.theme_styles1 .card-header::after { 
+    right: -1rem; 
+}
+
+/* styles1卡片内容样式 */
+.theme-styles1 .card-image-container {
+    margin-top: 8px;
+    border: 4px solid #77eee4;
+    border-radius: 4px;
+    position: relative;
+}
+
+.theme-styles1 .card-body {
+    background-color: #c7fedc;
+    background-image: linear-gradient(rgba(210,180,140,0.1) 1px, transparent 1px), 
+                      linear-gradient(90deg, rgba(210,180,140,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    margin-top: 8px;
+    border-radius: 6px;
+    padding: 12px;
+    border: 2px solid #82dd91;
+    position: relative;
+}
+
+.theme-styles1 .caption-textarea {
+    width: 100%;
+    height: 120px;
+    font-family: 'Noto Serif SC', serif;
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: #44403c;
+    line-height: 1.4;
+    resize: none;
+}
+
+/* --- styles2主题样式 --- */
+.theme-styles2 .config-item-card, 
+.theme-styles2 .action-btn-card {
+    background: linear-gradient(145deg, #8B4513, #654321);
+    border: 2px solid #6dc0f8;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.theme-styles2 .form-label {
+    color: #00eeff;
+    font-weight: 700;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+}
+
+.theme-styles2 .form-input { 
+    background-color: rgb(31, 41, 55);
+    color: white;
+    border: 1px solid rgb(157, 245, 223);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+}
+
+.theme-styles2 .form-input:focus {
+    outline: none;
+    border-color: transparent;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
+}
+
+.theme-styles2 .action-btn-card .btn { 
+    color: #89f3f3;
+    font-weight: 600;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+}
+
+/* styles2卡片内容样式 */
+.theme-styles2 .card-image-container {
+    margin-top: 4px;
+    border: 2px solid #86e9d0;
+    position: relative;
+}
+
+.theme-styles2 .card-body {
+    background-color: #93e9b7;
+    margin-top: 8px;
+    padding: 12px;
+    border-radius: 4px;
+    border: 1px solid #8fecec;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.theme-styles2 .caption-textarea {
+    color: #8bf1b6;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+.theme-styles2 .styles2-name {
+    color: #FFF8DC;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+}
+
+.theme-styles2 .description-header {
+    color: #3d3026;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.theme-styles2 .image-dimensions {
+    color: #FFF8DC;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+}
+
+.theme-styles2 .delete-btn {
+    background-color: #CD3700;
+    border: 1px solid #00ff62;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.theme-styles2 .delete-btn:hover {
+    background-color: #FF4500;
+}
+
+/* 通用文本区域样式 */
+.caption-textarea:focus {
+    outline: none;
+}
+
+.caption-textarea::placeholder {
+    color: #9ca3af;
+}
+
+/* 滚动条优化 */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* 通用样式 */
+.holo-foil { 
+    @apply absolute bottom-2 right-2 w-5 h-5; 
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000); 
+    border: 1px solid #fff; 
+}
+
+.image-dimensions { 
+    @apply text-sm font-sans; 
+    color: white; 
+    text-shadow: 1px 1px 1px black; 
+}
+
+.description-header { 
+    font-family: 'Noto Serif SC', serif; 
+    font-weight: 700; 
+    color: #44403c; 
+}
+
+.loader { 
+    border-top-color: #4f46e5; 
+    animation: spin 1s linear infinite; 
+}
+
+@keyframes spin { 
+    to { 
+        transform: rotate(360deg); 
+    } 
+}
+
+/* 主题切换控制 */
+.styles1-elements,
+.styles2-elements {
+    display: none;  /* 确保默认隐藏 */
+}
+
+.theme-styles1 .styles1-elements {
+    display: block !important;  /* 强制显示选中主题 */
+}
+
+.theme-styles2 .styles2-elements {
+    display: block !important;  /* 强制显示选中主题 */
+}
+
+/* --- styles2主题样式 --- */
+.theme-styles2 .card-frame {
+    background: linear-gradient(145deg, #ff0800, #000000);
+    border: 2px solid #58cff3;
+    border-radius: 6px;
+    padding: 4px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.theme-styles2 .card-header {
+    padding: 4px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #0bb88d, #5ad3e9);
+    border-radius: 4px;
+    border: 1px solid #00a2ff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
