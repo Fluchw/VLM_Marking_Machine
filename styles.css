@@ -137,7 +137,9 @@ body {
 
 /* 结果卡片基础样式 */
 .result-card { 
-    transition: box-shadow 0.3s ease; 
+    transition: all 0.2s ease-out;
+    opacity: 1;
+    transform: scale(1);
 }
 
 /* 布局容器优化 */
@@ -325,7 +327,7 @@ body {
 }
 
 .theme-styles2 .caption-textarea {
-    color: #8bf1b6;
+    color: #181a19;
     font-size: 0.95rem;
     line-height: 1.6;
     font-weight: 500;

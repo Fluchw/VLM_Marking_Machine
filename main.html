@@ -43,7 +43,7 @@
                 </div>
                 <div class="config-item-card">
                     <label for="model" class="form-label block text-sm font-medium mb-2">模型</label>
-                    <input type="text" id="model" class="form-input" value="qwen/qwen2.5-vl-72b-instruct:free" readonly>
+                    <input type="text" id="model" class="form-input" value="google/gemini-2.0-flash-exp:free" placeholder="输入要使用的模型">
                 </div>
                 <div class="config-item-card">
                     <label for="themeSelector" class="form-label block text-sm font-medium mb-2">界面风格</label>
@@ -58,11 +58,26 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                  <div class="config-item-card">
                     <label for="systemPrompt" class="form-label block text-sm font-medium mb-2">系统提示词</label>
-                    <textarea id="systemPrompt" class="form-input h-32 resize-none" placeholder="例如：你是一位专业的图像分析师..."></textarea>
+                    <textarea id="systemPrompt" class="form-input h-32 resize-none">需要描述的有背景,动作,表情,服装,不需要描述的为人物特征,用多个tag来描述,而不是连续的文本,不要分类,直接将所有描述都用逗号分隔
+
+实例:红黑相间的连衣裙,蕾丝装饰,黑色项圈,红色蝴蝶结</textarea>
                 </div>
                  <div class="config-item-card">
                     <label for="userPrompt" class="form-label block text-sm font-medium mb-2">用户提示词 <span class="text-red-500">*</span></label>
-                    <textarea id="userPrompt" class="form-input h-32 resize-none" >这张图片里有什么？</textarea>
+                    <textarea id="userPrompt" class="form-input h-32 resize-none">描述图片,不要出现人物描述</textarea>
+                </div>
+            </div>
+
+            <!-- 触发词输入框 -->
+            <div class="grid grid-cols-1 gap-6">
+                <div class="config-item-card">
+                    <label for="triggerPrompt" class="form-label block text-sm font-medium mb-2">触发词 (将添加到所有描述末尾)</label>
+                    <div class="flex gap-4">
+                        <input type="text" id="triggerPrompt" class="form-input flex-grow" placeholder="输入要添加的触发词">
+                        <button id="addTriggerBtn" class="btn btn-secondary min-w-[120px]">
+                            <span>📝 添加</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -175,6 +190,22 @@
         const clearAllBtn = document.getElementById('clearAllBtn');
         clearAllBtn.addEventListener('click', clearAllImages);
 
+        // 修改事件监听处理
+        resultsContainer.addEventListener('click', function(event) {
+            const deleteBtn = event.target.closest('.delete-btn');
+            if (deleteBtn) {
+                event.stopPropagation(); // 阻止事件冒泡
+                const card = deleteBtn.closest('.result-card');
+                if (card) {
+                    const filename = card.getAttribute('data-filename');
+                    deleteImage(filename);
+                }
+                return;
+            }
+            
+            handleResultCardClick(event);
+        });
+
         // --- Functions ---
         function applyTheme() {
             const selectedTheme = themeSelector.value;
@@ -191,12 +222,24 @@
             resultsContainer.innerHTML = '';
             exportJsonBtn.disabled = true;
             exportZipBtn.disabled = true;
-            imageFiles.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = (e) => createResultCard(file.name, e.target.result);
-                reader.readAsDataURL(file);
+            
+            // 使用Promise.all确保按顺序处理
+            const readers = imageFiles.map(file => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        resolve({ file, result: e.target.result });
+                    };
+                    reader.readAsDataURL(file);
+                });
             });
-            validateInputs();
+
+            Promise.all(readers).then(results => {
+                results.forEach(({ file, result }) => {
+                    createResultCard(file.name, result);
+                });
+                validateInputs();
+            });
         }
 
         function createResultCard(filename, imageSrc) {
@@ -224,7 +267,7 @@
                         </div>
                         <div class="card-body">
                             <div class="flex justify-between items-center mb-2">
-                                <span class="description-header">【效果描述】</span>
+                                <span class="description-header">【文本描述】</span>
                                 <button class="advanced-edit-btn p-1 text-stone-600 hover:text-stone-900" title="高级编辑"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
                             </div>
                             <textarea class="caption-textarea w-full h-24 resize-none no-scrollbar" placeholder="等待AI生成描述..."></textarea>
@@ -251,7 +294,7 @@
                         </div>
                         <div class="card-body">
                              <div class="flex justify-between items-center mb-1">
-                                <span class="description-header">【效果描述】</span>
+                                <span class="description-header">【文本描述】</span>
                                 <button class="advanced-edit-btn p-1 text-stone-600 hover:text-stone-900" title="高级编辑"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
                             </div>
                             <textarea class="caption-textarea w-full resize-none no-scrollbar" placeholder="等待AI生成描述..."></textarea>
@@ -260,12 +303,6 @@
                 </div>
                 <small class="error-text absolute -bottom-6 left-0 text-red-400 text-xs w-full text-center"></small>
             `;
-            // 添加删除按钮事件监听
-            const delBtn = card.querySelector('.delete-btn');
-            delBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                deleteImage(filename);
-            });
 
             resultsContainer.appendChild(card);
             
@@ -279,6 +316,11 @@
         }
         
         function handleResultCardClick(event){
+            // 如果点击的是删除按钮，不处理编辑事件
+            if (event.target.closest('.delete-btn')) {
+                return;
+            }
+            
             const editBtn = event.target.closest('.advanced-edit-btn');
             const imageContainer = event.target.closest('.clickable-image');
 
@@ -342,26 +384,46 @@
             const baseUrl = baseURLInput.value.trim() || 'https://openrouter.ai/api/v1';
             const apiUrl = `${baseUrl.replace(/\/$/, '')}/chat/completions`;
 
-            const messages = [];
-            if (systemPrompt.trim()) messages.push({ role: "system", content: systemPrompt.trim() });
-            messages.push({
-                role: "user",
-                content: [
-                    { type: "text", text: userPrompt },
-                    { type: "image_url", image_url: { url: base64Image } }
-                ]
-            });
-            const response = await fetch(apiUrl, {
-                method: "POST",
-                headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
-                body: JSON.stringify({ model: document.getElementById('model').value, messages: messages })
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error.message || response.statusText);
+            try {
+                const messages = [];
+                if (systemPrompt.trim()) messages.push({ role: "system", content: systemPrompt.trim() });
+                messages.push({
+                    role: "user",
+                    content: [
+                        { type: "text", text: userPrompt },
+                        { type: "image_url", image_url: { url: base64Image } }
+                    ]
+                });
+                
+                // 只保留基础必需的headers
+                const headers = {
+                    "Authorization": `Bearer ${apiKey}`,
+                    "Content-Type": "application/json"
+                };
+                
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    headers,
+                    body: JSON.stringify({ 
+                        model: document.getElementById('model').value, 
+                        messages 
+                    })
+                });
+                
+                // 直接获取并显示原始响应
+                const responseText = await response.text();
+                
+                if (!response.ok) {
+                    throw new Error(responseText);
+                }
+                
+                const result = JSON.parse(responseText);
+                return result.choices[0].message.content;
+                
+            } catch (error) {
+                // 不处理错误消息,直接抛出
+                throw error;
             }
-            const result = await response.json();
-            return result.choices[0].message.content;
         }
 
         async function processImages() {
@@ -376,13 +438,17 @@
                 const file = imageFiles[i];
                 statusText.textContent = `正在处理第 ${i + 1} / ${imageFiles.length} 张图片: ${file.name}`;
                 const card = document.querySelector(`.result-card[data-filename="${file.name}"]`);
-                const textarea = card.querySelector('textarea');
+                const textareas = card.querySelectorAll('.caption-textarea');  // 获取所有文本框
                 const errorText = card.querySelector('.error-text');
                 card.classList.remove('error');
                 errorText.textContent = '';
                 try {
                     const base64Image = await readImageAsBase64(file);
-                    textarea.value = await callVisionAPI(apiKey, base64Image, systemPromptInput.value, userPromptInput.value);
+                    const content = await callVisionAPI(apiKey, base64Image, systemPromptInput.value, userPromptInput.value);
+                    // 为所有主题的文本框都设置内容
+                    textareas.forEach(textarea => {
+                        textarea.value = content;
+                    });
                     processedCount++;
                 } catch (error) {
                     errorText.textContent = `处理失败: ${error.message}`;
@@ -458,14 +524,19 @@
         function deleteImage(filename) {
             const card = document.querySelector(`.result-card[data-filename="${filename}"]`);
             if (card) {
-                card.remove();
-                imageFiles = imageFiles.filter(file => file.name !== filename);
-                validateInputs();
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.9)';
                 
-                if (imageFiles.length === 0) {
-                    exportJsonBtn.disabled = true;
-                    exportZipBtn.disabled = true;
-                }
+                setTimeout(() => {
+                    card.remove();
+                    imageFiles = imageFiles.filter(file => file.name !== filename);
+                    validateInputs();
+                    
+                    if (imageFiles.length === 0) {
+                        exportJsonBtn.disabled = true;
+                        exportZipBtn.disabled = true;
+                    }
+                }, 200);
             }
         }
         
@@ -476,6 +547,24 @@
             exportJsonBtn.disabled = true;
             exportZipBtn.disabled = true;
         }
+
+        // 添加触发词功能
+        document.getElementById('addTriggerBtn').addEventListener('click', function() {
+            const triggerText = document.getElementById('triggerPrompt').value.trim();
+            if (!triggerText) return;
+            
+            document.querySelectorAll('.caption-textarea').forEach(textarea => {
+                const currentText = textarea.value.trim();
+                if (currentText) {
+                    textarea.value = currentText + ', ' + triggerText;
+                } else {
+                    textarea.value = triggerText;
+                }
+            });
+            
+            // 清空输入框
+            document.getElementById('triggerPrompt').value = '';
+        });
     </script>
 </body>
 </html>
